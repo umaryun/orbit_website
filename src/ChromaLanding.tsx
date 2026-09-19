@@ -53,8 +53,7 @@ const STREAMS: readonly Stream[] = [
 /*  WhatsApp CTA — campaign-attributed link                            */
 /* ------------------------------------------------------------------ */
 
-// TODO(launch): replace with the real Orbit WhatsApp Business number before this goes live.
-const WHATSAPP_NUMBER = "15550000000";
+const WHATSAPP_LINK = "https://wa.me/message/NGU6OR5CVCGVO1";
 
 const DEFAULT_WHATSAPP_MESSAGE = "Hey Orbit — I'd like a design-partner spot.";
 
@@ -65,8 +64,9 @@ const CAMPAIGN_WHATSAPP_MESSAGES: Record<string, string> = {
   agency: "Hey Orbit — AGENCY50, I'd like a design-partner spot.",
 };
 
-function buildWhatsAppHref(message: string): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+function buildWhatsAppHref(message?: string): string {
+  if (!message) return WHATSAPP_LINK;
+  return `${WHATSAPP_LINK}?text=${encodeURIComponent(message)}`;
 }
 
 /** Reads `?src=` on first client render so the CTA carries campaign attribution end-to-end. */
