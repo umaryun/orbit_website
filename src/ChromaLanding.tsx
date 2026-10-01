@@ -11,42 +11,133 @@ interface NavLink {
   href: string;
 }
 
-interface Stat {
-  label: string;
-  value: ReactNode;
-  tone?: "ink" | "forest";
-}
-
-interface Stream {
-  name: string;
-  code: string;
-  dot: string; // tailwind text-color class driving the status dot
-}
-
 const NAV_LINKS: readonly NavLink[] = [
-  { label: "Features", href: "#features" },
-  { label: "Proactive PM", href: "#proactive" },
-  { label: "Architecture", href: "#architecture" },
+  { label: "How it works", href: "#how" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
 ];
 
-const STATS: readonly Stat[] = [
+const HERO_POINTS: readonly string[] = [
+  "Voice notes become tasks with due dates",
+  "Texts you before a deadline slips",
+  "No new app to open",
+];
+
+interface Step {
+  n: string;
+  title: string;
+  body: string;
+}
+
+const STEPS: readonly Step[] = [
   {
-    label: "Webhook Ingestion",
-    value: (
+    n: "01",
+    title: "Talk to it",
+    body: "Send a voice note or a quick text after a client call, the way you'd tell a friend what's on your plate.",
+  },
+  {
+    n: "02",
+    title: "It organizes",
+    body: "Orbit sorts it into projects and tasks with due dates, and remembers the client details and decisions you mention.",
+  },
+  {
+    n: "03",
+    title: "It texts you first",
+    body: "A morning plan, a nudge before a deadline, a follow-up when you're blocked. You reply in WhatsApp and it updates everything.",
+  },
+];
+
+type Who = "you" | "orbit";
+
+interface ChatLine {
+  who: Who;
+  text: ReactNode;
+  meta?: string;
+}
+
+const EXAMPLE_CHAT: readonly ChatLine[] = [
+  {
+    who: "you",
+    meta: "Voice note · 0:38",
+    text: "Just got off the call with Acme. They want the Stripe checkout live by Friday, and I still owe Tunde the dashboard fixes…",
+  },
+  {
+    who: "orbit",
+    text: (
       <>
-        &lt;50<span className="align-top text-[0.5em] opacity-50">ms</span>
+        Got it. Added to <b>Acme</b>: Stripe checkout, due Fri. Added to <b>Tunde</b>: dashboard
+        fixes. Want me to check in Thursday morning on the checkout?
       </>
     ),
   },
-  { label: "Voice Pipeline", value: "Whisper v3" },
-  { label: "Proactive Agent", value: "Active", tone: "forest" },
+  { who: "you", text: "Yes please" },
+  { who: "orbit", meta: "Thursday, 9:02", text: "Morning! Stripe checkout for Acme is due tomorrow. Still on track?" },
 ];
 
-const STREAMS: readonly Stream[] = [
-  { name: "Voice Note Transcription", code: "Whisper-v3", dot: "text-forest" },
-  { name: "Proactive Standup Worker", code: "09:00 AM", dot: "text-signal" },
-  { name: "pgvector Semantic Memory", code: "Cosine Sim", dot: "text-forest" },
-  { name: "Zero-SQL Tool Execution", code: "Pydantic", dot: "text-orange" },
+interface Plan {
+  name: string;
+  price: string;
+  cadence: string;
+  note: string;
+  features: readonly string[];
+  highlight?: boolean;
+}
+
+const PLANS: readonly Plan[] = [
+  {
+    name: "Free trial",
+    price: "₦0",
+    cadence: "for 14 days",
+    note: "No card needed. Just say hi.",
+    features: ["Everything in Pro", "Reminders, morning plans and nudges", "Cancel by simply not paying"],
+  },
+  {
+    name: "Founding member",
+    price: "₦3,500",
+    cadence: "/ month, locked for life",
+    note: "First 25 people only. In return, a short feedback call each month.",
+    features: ["Everything in Pro", "Price never goes up", "Direct line to the founder"],
+    highlight: true,
+  },
+  {
+    name: "Pro",
+    price: "₦5,000",
+    cadence: "/ month",
+    note: "Or ₦50,000 / year (two months free).",
+    features: ["Unlimited projects and tasks", "Voice notes and PRD uploads", "Client-ready status updates"],
+  },
+];
+
+interface Faq {
+  q: string;
+  a: string;
+}
+
+const FAQS: readonly Faq[] = [
+  {
+    q: "Do I need to install anything?",
+    a: "No. Orbit is a WhatsApp chat. Tap the button, say hi, and it asks your name and timezone. Save the number as “Orbit” so you know who's texting.",
+  },
+  {
+    q: "What does Orbit remember about me?",
+    a: "Your projects, tasks, deadlines and the details you mention about them. Ask “what do you know about me?” any time to see it, and tell it to delete anything that's wrong.",
+  },
+  {
+    q: "Can my clients see it?",
+    a: "No. Orbit only talks to you. If you want to send a client an update, it drafts one for you to copy, with your internal notes left out.",
+  },
+  {
+    q: "Is it a general AI chatbot?",
+    a: "No, on purpose. Orbit does one job: keeping track of your client work and deadlines. For anything else, use your favourite assistant.",
+  },
+  {
+    q: "What happens after the trial?",
+    a: "Orbit sends you a recap of what it did and a payment link. If you don't subscribe, chat still works, but reminders and check-ins pause.",
+  },
+  {
+    q: "How do I pay?",
+    a: "By card through Paystack, in naira. Monthly plans renew automatically; to cancel, just message Orbit and we'll stop it. The yearly plan can also be paid by transfer.",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -55,13 +146,14 @@ const STREAMS: readonly Stream[] = [
 
 const WHATSAPP_LINK = "https://wa.me/message/NGU6OR5CVCGVO1";
 
-const DEFAULT_WHATSAPP_MESSAGE = "Hey Orbit — I'd like a design-partner spot.";
+const DEFAULT_WHATSAPP_MESSAGE = "Hey Orbit, I'd like to start my free trial.";
 
-// Keys match the `?src=` query param on the campaign-specific links (see GTM wa.me link scheme).
+// Keys match the `?src=` query param on campaign links. The backend reads the
+// INDIE50 / FOUNDER50 / AGENCY50 keyword from the first message for attribution.
 const CAMPAIGN_WHATSAPP_MESSAGES: Record<string, string> = {
-  indie: "Hey Orbit — INDIE50, I'd like a design-partner spot.",
-  founder: "Hey Orbit — FOUNDER50, I'd like a design-partner spot.",
-  agency: "Hey Orbit — AGENCY50, I'd like a design-partner spot.",
+  indie: "Hey Orbit, INDIE50, I'd like to start my free trial.",
+  founder: "Hey Orbit, FOUNDER50, I'd like to start my free trial.",
+  agency: "Hey Orbit, AGENCY50, I'd like to start my free trial.",
 };
 
 function buildWhatsAppHref(message?: string): string {
@@ -120,35 +212,70 @@ const ArrowRight: FC<SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
+const Check: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden {...props}>
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const CtaButton: FC<{ href: string; children: ReactNode; tone?: "ink" | "paper"; className?: string }> = ({
+  href,
+  children,
+  tone = "ink",
+  className = "",
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`group inline-flex items-center gap-2 rounded-full border px-6 py-3 font-display font-semibold transition-colors ${
+      tone === "ink"
+        ? "border-ink bg-ink text-paper hover:bg-paper hover:text-ink"
+        : "border-paper bg-paper text-ink hover:bg-transparent hover:text-paper"
+    } ${className}`}
+  >
+    {children}
+    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+  </a>
+);
+
+const SectionHead: FC<{ kicker: string; title: string; sub?: string }> = ({ kicker, title, sub }) => (
+  <div className="border-b border-ink/25 pb-5">
+    <p className="label-mono text-orange">{kicker}</p>
+    <h2 className="mt-3 font-display text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+    {sub && <p className="mt-2 max-w-[60ch] text-ink/70">{sub}</p>}
+  </div>
+);
+
 /* ------------------------------------------------------------------ */
 /*  Navigation                                                         */
 /* ------------------------------------------------------------------ */
 
-const BetaBanner: FC<{ href: string }> = ({ href }) => (
+const TrialBanner: FC<{ href: string }> = ({ href }) => (
   <div className="border-b border-ink/15 bg-ink text-paper">
     <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center gap-x-2 gap-y-1 px-6 py-2.5 text-center">
-      <span className="label-mono text-orange">Free Beta</span>
-      <span className="text-sm text-paper/80">50 design-partner spots open this wave —</span>
+      <span className="label-mono text-orange">Founding members</span>
+      <span className="text-sm text-paper/80">₦3,500/month locked for life, first 25 people.</span>
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm font-semibold underline underline-offset-4 hover:text-orange"
       >
-        claim yours on WhatsApp
+        Start free on WhatsApp
       </a>
     </div>
   </div>
 );
 
 const Nav: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
-  <header className="border-b border-ink/15 mx-auto flex max-w-[1400px] items-center justify-between px-6 pt-8 pb-6 md:px-12">
+  <header className="mx-auto flex max-w-[1400px] items-center justify-between border-b border-ink/15 px-6 pt-8 pb-6 md:px-12">
     <a href="#top" className="flex items-center gap-3 font-display text-xl font-bold tracking-tight">
       <span className="relative h-6 w-6 overflow-hidden rounded-full bg-[radial-gradient(circle_at_30%_30%,#5f8ea0,#2e6b40_55%,#ed5a14)]">
         <Grain blend="overlay" className="opacity-60" />
       </span>
       <span>ORBIT</span>
-      <span className="label-mono rounded bg-ink/10 px-2 py-0.5 text-[0.6rem] text-ink/70">
+      <span className="label-mono hidden rounded bg-ink/10 px-2 py-0.5 text-[0.6rem] text-ink/70 sm:inline">
         POCKET PM
       </span>
     </a>
@@ -169,9 +296,9 @@ const Nav: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
       href={whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:text-ink hover:bg-paper border border-ink"
+      className="group inline-flex items-center gap-2 rounded-full border border-ink bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-paper hover:text-ink"
     >
-      Start on WhatsApp
+      Start free
       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
     </a>
   </header>
@@ -181,10 +308,9 @@ const Nav: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
 /*  Hero                                                               */
 /* ------------------------------------------------------------------ */
 
-/** The interactive HalftoneReveal speech-bubble bloom on the right of the hero. */
+/** The interactive HalftoneReveal bloom on the right of the hero. */
 const HeroBloom: FC = () => (
-  <div className="group relative mx-auto aspect-[5/5] w-full max-w-[560px] select-none">
-    {/* Main speech-bubble container hosting the WebGL HalftoneReveal */}
+  <div className="group relative mx-auto aspect-square w-full max-w-[560px] select-none">
     <div className="relative h-full w-full overflow-hidden rounded-xl shadow-[0_20px_60px_-15px_rgba(46,107,64,0.35)] transition-shadow duration-500 hover:shadow-[0_25px_70px_-10px_rgba(237,90,20,0.3)]">
       <HalftoneReveal
         src="/hero-bg.jpg"
@@ -202,36 +328,25 @@ const HeroBloom: FC = () => (
         className="h-full w-full"
         borderRadius="0px"
       />
-
-      {/* Specular gloss and grain textures over the canvas */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(60% 90% at 12% 20%, rgba(95,142,158,0.35), transparent 60%)",
+          background: "radial-gradient(60% 90% at 12% 20%, rgba(95,142,158,0.35), transparent 60%)",
         }}
       />
       <Grain blend="overlay" className="pointer-events-none opacity-60" />
-
-      {/* Floating guidance badge */}
-      <div className="pointer-events-none absolute bottom-4 right-8 flex items-center gap-2 rounded-full border border-white/20 bg-ink/60 px-3.5 py-1.5 backdrop-blur-md transition-opacity duration-300 group-hover:opacity-0">
-        <span className="h-1.5 w-1.5 rounded-full bg-orange animate-pulse" />
-        <span className="label-mono text-[0.65rem] text-paper">
-          Hover to Inspect PM Engine
-        </span>
-      </div>
     </div>
   </div>
 );
 
-const Hero: FC = () => (
+const Hero: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
   <section
     id="top"
-    className="h-[90vh] mx-auto grid max-w-[1400px] items-center gap-16 px-6 pt-16 pb-24 md:px-12 lg:grid-cols-[1.15fr_0.85fr] lg:pt-24"
+    className="mx-auto grid max-w-[1400px] items-center gap-16 px-6 pt-16 pb-24 md:px-12 lg:min-h-[85vh] lg:grid-cols-[1.15fr_0.85fr] lg:pt-24"
   >
     <div>
-      <p className="label-mono text-orange">v1.0 WhatsApp Live // AI Co-Developer</p>
+      <p className="label-mono text-orange">For freelance developers juggling clients</p>
 
       <h1 className="mt-6 font-display text-[clamp(3rem,8vw,5.9rem)] font-bold leading-[0.95] tracking-tight">
         Your Pocket PM
@@ -239,28 +354,23 @@ const Hero: FC = () => (
         on WhatsApp.
       </h1>
 
-      <p className="mt-8 max-w-[42ch] text-lg leading-relaxed text-ink/75">
-        An autonomous PM that lives where you already chat.
-        Orbit catches your late-night voice dumps,
-        organizes client deliverables, tracks blockers,
-        and keeps your projects unblocked on autopilot.
+      <p className="mt-8 max-w-[44ch] text-lg leading-relaxed text-ink/75">
+        Send Orbit a voice note after a client call. It turns it into tasks with deadlines, then
+        texts you before anything slips. No new app, no dashboard to keep updated.
       </p>
 
-      <div className="mt-14 max-w-[55ch] border-t border-ink/15 pt-6">
-        <dl className="flex flex-wrap gap-x-12 gap-y-6">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1">
-              <dt className="label-mono text-ink/60">{stat.label}</dt>
-              <dd
-                className={`font-display text-2xl font-semibold ${
-                  stat.tone === "forest" ? "text-forest" : "text-ink"
-                }`}
-              >
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+      <ul className="mt-8 flex flex-col gap-3">
+        {HERO_POINTS.map((p) => (
+          <li key={p} className="flex items-center gap-3 text-ink/85">
+            <Check className="h-4 w-4 shrink-0 text-forest" />
+            {p}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <CtaButton href={whatsappHref}>Start your free trial</CtaButton>
+        <span className="label-mono text-ink/60">14 days free · no card</span>
       </div>
     </div>
 
@@ -269,144 +379,65 @@ const Hero: FC = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Workflow — Active Streams panel                                    */
+/*  How it works + example conversation                                */
 /* ------------------------------------------------------------------ */
 
-const StreamsPanel: FC = () => (
-  <div className="flex flex-col gap-8 border border-ink/12 bg-paper-2/60 p-6 lg:rounded-l-2xl">
-    <div className="flex items-center justify-between">
-      <h3 className="label-mono font-bold text-ink">Live PM Pipelines</h3>
-      <button
-        type="button"
-        aria-label="Add stream"
-        className="text-ink/60 transition-colors hover:text-ink"
+const Bubble: FC<{ line: ChatLine }> = ({ line }) => {
+  const mine = line.who === "you";
+  return (
+    <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[0.95rem] leading-snug shadow-sm ${
+          mine ? "rounded-br-sm bg-[#d9fdd3] text-ink" : "rounded-bl-sm bg-white text-ink"
+        }`}
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="16" />
-          <line x1="8" y1="12" x2="16" y2="12" />
-        </svg>
-      </button>
-    </div>
-
-    <ul className="flex flex-col gap-4">
-      {STREAMS.map((stream) => (
-        <li key={stream.name} className="flex items-center justify-between text-sm">
-          <span className="flex items-center gap-3">
-            <span className={`h-2 w-2 rounded-full bg-current ${stream.dot}`} aria-hidden />
-            {stream.name}
-          </span>
-          <span className="label-mono text-ink/70">{stream.code}</span>
-        </li>
-      ))}
-    </ul>
-
-    <div className="mt-auto">
-      <p className="label-mono mb-2 text-ink/60">Worker Throughput // 99.98% SLA</p>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-ink/10">
-        <div className="h-full w-[88%] rounded-full bg-orange" />
+        {line.meta && <p className="label-mono mb-1 text-[0.6rem] text-ink/50">{line.meta}</p>}
+        <p>{line.text}</p>
       </div>
     </div>
-  </div>
+  );
+};
+
+const ExampleChat: FC = () => (
+  <figure className="overflow-hidden rounded-2xl border border-ink/12 bg-[#efeae2]">
+    <div className="flex items-center gap-3 bg-forest px-5 py-3 text-paper">
+      <span className="relative h-8 w-8 overflow-hidden rounded-full bg-[radial-gradient(circle_at_30%_30%,#5f8ea0,#2e6b40_55%,#ed5a14)]" />
+      <div>
+        <p className="font-display font-semibold leading-none">Orbit</p>
+        <p className="mt-1 text-xs text-paper/70">your PM</p>
+      </div>
+    </div>
+    <div className="flex flex-col gap-3 p-5">
+      {EXAMPLE_CHAT.map((line, i) => (
+        <Bubble key={i} line={line} />
+      ))}
+    </div>
+    <figcaption className="label-mono border-t border-ink/10 bg-paper-2 px-5 py-3 text-[0.6rem] text-ink/55">
+      Example conversation
+    </figcaption>
+  </figure>
 );
 
-/* ------------------------------------------------------------------ */
-/*  Workflow — Graph Inspector panel                                   */
-/* ------------------------------------------------------------------ */
-
-const GraphViz: FC = () => (
-  <svg
-    viewBox="0 0 1000 260"
-    preserveAspectRatio="none"
-    className="h-full w-full"
-    role="img"
-    aria-label="Live signal waveform trending across the render window"
-  >
-    <defs>
-      <linearGradient id="orbit-line" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#1e5fce" />
-        <stop offset="50%" stopColor="#f29fc8" />
-        <stop offset="100%" stopColor="#ed5a14" />
-      </linearGradient>
-      <pattern id="orbit-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-      </pattern>
-      <filter id="orbit-rough">
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n" />
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="3" />
-      </filter>
-    </defs>
-
-    <rect width="1000" height="260" fill="url(#orbit-grid)" />
-
-    <path
-      d="M 0,150 C 150,200 250,70 400,130 S 600,230 750,170 S 900,90 1000,140"
-      fill="none"
-      stroke="url(#orbit-line)"
-      strokeWidth="4"
-      strokeLinecap="round"
-      filter="url(#orbit-rough)"
+const HowItWorks: FC = () => (
+  <section id="how" className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
+    <SectionHead
+      kicker="How it works"
+      title="Talk to it like a friend. It keeps the deadlines."
+      sub="Most task apps die because you stop opening them. Orbit lives in the chat you already open all day, and it reaches out first."
     />
 
-    <circle cx="400" cy="130" r="5" fill="#ffffff" />
-    <circle cx="750" cy="170" r="5" fill="#ffffff" />
-  </svg>
-);
+    <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_minmax(320px,460px)] lg:items-start">
+      <ol className="grid gap-px overflow-hidden rounded-2xl border border-ink/12 bg-ink/10">
+        {STEPS.map((s) => (
+          <li key={s.n} className="bg-paper p-6 md:p-8">
+            <p className="label-mono text-orange">{s.n}</p>
+            <h3 className="mt-2 font-display text-2xl font-semibold">{s.title}</h3>
+            <p className="mt-2 max-w-[55ch] text-ink/75">{s.body}</p>
+          </li>
+        ))}
+      </ol>
 
-const Pip: FC<{ children: ReactNode; ring?: boolean }> = ({ children, ring }) => (
-  <span
-    className={`label-mono rounded px-2 py-1 text-[0.65rem] text-white/80 ${
-      ring ? "border border-white/20" : "bg-white/10"
-    }`}
-  >
-    {children}
-  </span>
-);
-
-const GraphPanel: FC = () => (
-  <div className="relative flex flex-col gap-4 overflow-hidden border border-ink/12 bg-ink p-6 text-white lg:rounded-r-2xl">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <span className="label-mono text-white/80">Context & Memory Graph</span>
-        <span className="label-mono rounded bg-white/10 px-2 py-0.5 text-[0.6rem] text-white/80">
-          LIVE EMBEDDINGS
-        </span>
-      </div>
-      <div className="flex gap-1.5">
-        <Pip ring>TASKS</Pip>
-        <Pip ring>PROJECTS</Pip>
-        <Pip ring>MEMORY</Pip>
-      </div>
-    </div>
-
-    <div className="relative min-h-[200px] flex-1">
-      <GraphViz />
-    </div>
-
-    <div className="flex items-center justify-between">
-      <span className="label-mono text-white/50">T-0.00ms (Webhook Ingest)</span>
-      <span className="label-mono text-white/50">T-480.00ms (Dispatched)</span>
-    </div>
-  </div>
-);
-
-const Workflow: FC = () => (
-  <section id="features" className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
-    <div className="flex flex-col items-start justify-between gap-3 border-b border-ink/25 pb-5 sm:flex-row sm:items-end">
-      <div>
-        <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-          Autonomous Workflow Orchestration
-        </h2>
-        <p className="mt-2 text-sm text-ink/70">
-          Zero-overhead project management powered by background workers and strict zero-raw-SQL tools.
-        </p>
-      </div>
-      <span className="label-mono text-ink/70">Module 01 // Proactive PM Engine</span>
-    </div>
-
-    <div id="architecture" className="mt-10 grid gap-px lg:grid-cols-[minmax(260px,1fr)_2.6fr]">
-      <StreamsPanel />
-      <GraphPanel />
+      <ExampleChat />
     </div>
   </section>
 );
@@ -416,27 +447,94 @@ const Workflow: FC = () => (
 /* ------------------------------------------------------------------ */
 
 const Testimonial: FC = () => (
-  <section id="proactive" className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
+  <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
     <div className="grid gap-10 border-t border-ink/25 pt-12 lg:grid-cols-[1.3fr_0.7fr]">
       <div>
-        <p className="label-mono text-orange">Design Partner Feedback</p>
+        <p className="label-mono text-orange">From an early user</p>
         <blockquote className="mt-6 font-display text-2xl font-medium leading-snug text-ink md:text-3xl">
           &ldquo;Seeing notifications reminding me about a task I am supposed to complete helps my
           productivity. I&rsquo;m always on WhatsApp.&rdquo;
         </blockquote>
-        <p className="label-mono mt-6 text-ink/60">
-          — Early Orbit design partner, freelance developer
-        </p>
+        <p className="label-mono mt-6 text-ink/60">Freelance developer, Orbit beta</p>
       </div>
 
-      <div className="border-l border-ink/15 pl-8">
-        <p className="label-mono text-forest">One Job. On Purpose.</p>
+      <div className="border-ink/15 lg:border-l lg:pl-8">
+        <p className="label-mono text-forest">One job. On purpose.</p>
         <p className="mt-4 text-lg leading-relaxed text-ink/75">
           Orbit won&rsquo;t be your therapist, your calendar, or your CRM. It remembers your
-          projects, tracks your deadlines, and nudges you before something slips — that&rsquo;s
-          the whole job, and we&rsquo;re not diluting it into a 5-in-1 chatbot.
+          projects, tracks your deadlines, and nudges you before something slips. That&rsquo;s the
+          whole job.
         </p>
       </div>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Pricing                                                            */
+/* ------------------------------------------------------------------ */
+
+const Pricing: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
+  <section id="pricing" className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
+    <SectionHead
+      kicker="Pricing"
+      title="Less than one missed deadline costs you."
+      sub="Start free. Orbit sends you a payment link near the end of your trial, right in the chat."
+    />
+
+    <div className="mt-10 grid gap-6 md:grid-cols-3">
+      {PLANS.map((plan) => (
+        <div
+          key={plan.name}
+          className={`flex flex-col rounded-2xl border p-6 md:p-8 ${
+            plan.highlight ? "border-ink bg-ink text-paper" : "border-ink/15 bg-paper"
+          }`}
+        >
+          <p className={`label-mono ${plan.highlight ? "text-orange" : "text-ink/60"}`}>{plan.name}</p>
+          <p className="mt-4 font-display text-5xl font-bold tracking-tight">{plan.price}</p>
+          <p className={`mt-1 text-sm ${plan.highlight ? "text-paper/70" : "text-ink/60"}`}>{plan.cadence}</p>
+          <p className={`mt-4 text-sm ${plan.highlight ? "text-paper/85" : "text-ink/75"}`}>{plan.note}</p>
+          <ul className="mt-6 flex flex-col gap-2.5 text-sm">
+            {plan.features.map((f) => (
+              <li key={f} className="flex items-start gap-2.5">
+                <Check className={`mt-0.5 h-4 w-4 shrink-0 ${plan.highlight ? "text-orange" : "text-forest"}`} />
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+      <CtaButton href={whatsappHref}>Start your 14-day trial</CtaButton>
+      <span className="text-sm text-ink/60">Every plan starts with the free trial.</span>
+    </div>
+  </section>
+);
+
+/* ------------------------------------------------------------------ */
+/*  FAQ                                                                */
+/* ------------------------------------------------------------------ */
+
+const FaqSection: FC = () => (
+  <section id="faq" className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
+    <SectionHead kicker="FAQ" title="Questions people ask first" />
+    <div className="mt-6 divide-y divide-ink/15">
+      {FAQS.map((f) => (
+        <details key={f.q} className="group py-5">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-lg font-semibold">
+            {f.q}
+            <span
+              aria-hidden
+              className="text-2xl leading-none text-ink/50 transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+          <p className="mt-3 max-w-[70ch] text-ink/75">{f.a}</p>
+        </details>
+      ))}
     </div>
   </section>
 );
@@ -448,13 +546,11 @@ const Testimonial: FC = () => (
 const CtaFooter: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
   <section id="app" className="mx-auto max-w-[1400px] px-6 pb-20 md:px-12">
     <div className="relative overflow-hidden rounded-2xl bg-ink px-6 py-24 text-center text-paper">
-      {/* checkerboard bleed, bottom-right */}
       <div
         aria-hidden
         className="absolute inset-y-0 right-0 w-1/2 opacity-[0.6]"
         style={{
-          backgroundImage:
-            "repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%, transparent 0% 50%)",
+          backgroundImage: "repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%, transparent 0% 50%)",
           backgroundSize: "72px 72px",
           maskImage: "linear-gradient(to left, black, transparent 80%)",
           WebkitMaskImage: "linear-gradient(to left, black, transparent 80%)",
@@ -462,29 +558,20 @@ const CtaFooter: FC<{ whatsappHref: string }> = ({ whatsappHref }) => (
       />
 
       <div className="relative">
-        <h2 className="font-display text-5xl font-bold tracking-tight md:text-6xl">
-          Ready to put your PM on autopilot?
+        <h2 className="font-display text-4xl font-bold tracking-tight md:text-6xl">
+          Stop keeping deadlines in your head.
         </h2>
 
         <p className="mx-auto mt-6 max-w-[48ch] text-lg text-paper/75">
-          Send voice notes, dump client briefs, and keep your multi-project sprints organized
-          directly from WhatsApp.
+          Say hi to Orbit on WhatsApp, tell it what you're working on this week, and let it do the
+          remembering.
         </p>
 
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-10 inline-flex items-center rounded-full bg-paper px-8 py-4 font-display font-semibold text-ink transition-transform hover:scale-[1.02]"
-        >
-          Claim Your Design-Partner Spot
-        </a>
+        <CtaButton href={whatsappHref} tone="paper" className="mt-10 px-8 py-4">
+          Start free on WhatsApp
+        </CtaButton>
 
-        <p className="label-mono mt-4 text-orange">Free during beta · 50 spots per wave</p>
-
-        <p className="label-mono mt-8 text-white/45">
-          FastAPI • PostgreSQL + pgvector • Gemini 3.7 Flash • Groq Whisper v3
-        </p>
+        <p className="label-mono mt-4 text-orange">14 days free · no card needed</p>
       </div>
     </div>
   </section>
@@ -499,14 +586,15 @@ const ChromaLanding: FC = () => {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-paper text-ink">
-      {/* global page grain */}
       <Grain blend="multiply" className="fixed inset-0 z-50 opacity-[0.04]" />
-      <BetaBanner href={whatsappHref} />
+      <TrialBanner href={whatsappHref} />
       <Nav whatsappHref={whatsappHref} />
       <main>
-        <Hero />
-        <Workflow />
+        <Hero whatsappHref={whatsappHref} />
+        <HowItWorks />
         <Testimonial />
+        <Pricing whatsappHref={whatsappHref} />
+        <FaqSection />
         <CtaFooter whatsappHref={whatsappHref} />
       </main>
     </div>
