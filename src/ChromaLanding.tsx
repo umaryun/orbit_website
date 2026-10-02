@@ -144,7 +144,9 @@ const FAQS: readonly Faq[] = [
 /*  WhatsApp CTA — campaign-attributed link                            */
 /* ------------------------------------------------------------------ */
 
-const WHATSAPP_LINK = "https://wa.me/message/NGU6OR5CVCGVO1";
+// Number-based link: wa.me short links (wa.me/message/...) ignore ?text=, which
+// would drop the campaign keyword the backend uses for attribution.
+const WHATSAPP_LINK = "https://wa.me/2347064287664";
 
 const DEFAULT_WHATSAPP_MESSAGE = "Hey Orbit, I'd like to start my free trial.";
 
