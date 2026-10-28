@@ -1,13 +1,12 @@
 import type { FC, ReactNode } from "react";
 import { BOOK_CALL_URL, PATHS, useWhatsAppHref } from "../config";
-import HalftoneReveal from "../components/HalftoneReveal";
+import { Hero, VoiceNote } from "../components/hero";
+import type { Beat, HeroCard } from "../components/hero";
 import {
   ActionRow,
   Bubble,
   Button,
   FaqBands,
-  HeroPanel,
-  HeroSheet,
   LeadColumns,
   PlanTable,
   SiteFooter,
@@ -16,144 +15,64 @@ import {
   reveal,
   useReveal,
 } from "../components/site";
-import type { Frame, Msg } from "../components/site";
 
 /* ------------------------------------------------------------------ */
-/*  Hero: one freelancer's week with Orbit                              */
+/*  Hero: one conversation, played out                                 */
 /* ------------------------------------------------------------------ */
 
-const b = (m: Msg) => <Bubble m={m} />;
-const stack = (...nodes: ReactNode[]) => <div className="flex flex-col gap-1.5">{nodes}</div>;
+const HERO_BEATS: Beat[] = [
+  { kind: "day", label: "Tuesday" },
+  { kind: "msg", m: { from: "me", text: <VoiceNote length="0:38" />, time: "16:20" }, wait: 700 },
+  {
+    kind: "msg",
+    m: {
+      from: "orbit",
+      text: (
+        <>
+          Got it. Added to <b>Acme</b>: Stripe checkout, due Fri. Added to <b>Tunde</b>: dashboard fixes, due Thu. Want me to check
+          in Thursday morning?
+        </>
+      ),
+      time: "16:20",
+    },
+    typing: 1600,
+  },
+  { kind: "msg", m: { from: "me", text: "Yes please", time: "16:22" }, wait: 1500 },
+  { kind: "msg", m: { from: "orbit", text: "Done. I'll message you Thu at 09:00.", time: "16:22" }, typing: 900 },
+  { kind: "day", label: "Thursday", wait: 1600 },
+  { kind: "msg", m: { from: "orbit", text: "Morning! Stripe checkout for Acme is due tomorrow. Still on track?", time: "09:00" }, typing: 1000, wait: 600 },
+  { kind: "msg", m: { from: "me", text: "yes, just the webhooks left", time: "09:07" }, wait: 1400 },
+];
 
-const HERO_COLUMNS: Frame[][] = [
-  [
-    {
-      strip: "Voice note, after the Acme call",
-      stripTone: 2,
-      body: stack(
-        b({ from: "me", meta: "Voice note · 0:38", text: "“Acme want the Stripe checkout live by Friday, and I still owe Tunde the dashboard fixes…”", time: "16:20" }),
-        b({ from: "orbit", text: "Got it. Added to Acme: Stripe checkout, due Fri. Added to Tunde: dashboard fixes. Want a check-in Thursday morning?", time: "16:20" }),
-      ),
-    },
-    {
-      strip: "Reminder set",
-      stripTone: 1,
-      body: stack(
-        b({ from: "me", text: "remind me to invoice Tunde on Monday at 10", time: "18:04" }),
-        b({ from: "orbit", text: "Done. I'll message you Mon at 10:00.", time: "18:04" }),
-      ),
-    },
-  ],
-  [
-    {
-      strip: "Morning plan · 09:00",
-      stripTone: 0,
-      body: b({
-        from: "orbit",
-        text: (
-          <>
-            <b>Wednesday plan</b>
-            {"\n"}1. Stripe checkout (Acme), due Fri{"\n"}2. Dashboard fixes (Tunde), due Thu{"\n"}3. Send Acme the staging link
-          </>
-        ),
-        time: "09:00",
-      }),
-    },
-    {
-      strip: "You, after a client call",
-      stripTone: 3,
-      body: (
-        <div className="aspect-[4/5] overflow-hidden rounded-md">
-          <HalftoneReveal
-            src="/hero-bg.jpg"
-            mode="color"
-            shape="circle"
-            paperColor="#37604b"
-            inkColor="#111111"
-            dotDensity={70}
-            dotSize={1.05}
-            revealRadius={0.38}
-            edge={0.82}
-            follow={0.22}
-            contrast={1.2}
-            trigger="hover"
-            className="h-full w-full"
-            borderRadius="0px"
-          />
-        </div>
-      ),
-    },
-  ],
-  [
-    {
-      strip: "Check-in you asked for",
-      stripTone: 0,
-      body: stack(
-        b({ from: "orbit", text: "Morning! Stripe checkout for Acme is due tomorrow. Still on track?", time: "09:02" }),
-        b({ from: "me", text: "yes, just the webhooks left", time: "09:10" }),
-      ),
-    },
-  ],
-  [
-    {
-      strip: "PRD read",
-      stripTone: 1,
-      body: stack(
-        b({ from: "me", meta: "Acme_PRD_v3.pdf · 9 pages", text: "this is the spec", time: "11:41" }),
-        b({ from: "orbit", text: "Read it. Checkout, refunds and receipts are new. Want me to break checkout into tasks with dates?", time: "11:42" }),
-      ),
-    },
-    {
-      strip: "Console · today",
-      stripTone: 3,
-      body: (
-        <dl className="grid grid-cols-2 gap-1.5 text-ink">
-          {[
-            ["Open", "12"],
-            ["Due today", "2"],
-            ["Overdue", "1"],
-            ["Blocked", "0"],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-md bg-white p-2.5">
-              <dt className="text-[0.8125rem] text-ink-soft">{k}</dt>
-              <dd className="font-display text-[1.375rem] font-semibold leading-none tnum">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    },
-  ],
-  [
-    {
-      strip: "Client update, drafted",
-      stripTone: 2,
-      body: b({
-        from: "orbit",
-        text: "Draft for Acme:\n“This week we finished the cart and order emails. Checkout goes live Friday; refunds follow next week.”\n\nInternal notes left out.",
-        time: "17:30",
-      }),
-    },
-    {
-      strip: "Blocked, followed up",
-      stripTone: 0,
-      body: b({ from: "orbit", text: "Yesterday the Paystack webhook was blocked on keys. Did Acme send them?", time: "10:15" }),
-    },
-  ],
-  [
-    {
-      strip: "Memory, on request",
-      stripTone: 1,
-      body: stack(
-        b({ from: "me", text: "what do you know about Acme?", time: "13:12" }),
-        b({ from: "orbit", text: "Acme: Next.js + Stripe, deploys on Vercel. Sade signs off on design. They prefer updates on Fridays.", time: "13:12" }),
-      ),
-    },
-    {
-      strip: "Friday recap",
-      stripTone: 3,
-      body: b({ from: "orbit", text: "This week you finished 9 tasks across 3 projects. Due next week: refunds (Acme), the Tunde launch.", time: "16:00" }),
-    },
-  ],
+const TaskLine: FC<{ title: string; meta: string; tone: string }> = ({ title, meta, tone }) => (
+  <p className="flex items-center gap-2 text-[0.8125rem]">
+    <span className={`h-2 w-2 shrink-0 rounded-full ${tone}`} aria-hidden />
+    <span className="font-semibold">{title}</span>
+    <span className="truncate text-ink-soft">{meta}</span>
+  </p>
+);
+
+const HERO_CARDS: HeroCard[] = [
+  {
+    after: 2,
+    node: (
+      <div className="flex flex-col gap-1">
+        <p className="text-[0.8125rem] text-ink-soft">Added to your tasks</p>
+        <TaskLine title="Stripe checkout" meta="Acme · due Fri 30 Oct" tone="bg-orange" />
+        <TaskLine title="Dashboard fixes" meta="Tunde · due Thu 29 Oct" tone="bg-signal" />
+      </div>
+    ),
+  },
+  {
+    after: 4,
+    node: (
+      <div className="flex flex-col gap-1">
+        <p className="text-[0.8125rem] text-ink-soft">Check-in scheduled</p>
+        <p className="text-step-sm font-semibold">Thu 29 Oct, 09:00</p>
+        <p className="text-[0.8125rem] text-ink-soft">Stripe checkout · Acme</p>
+      </div>
+    ),
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -516,23 +435,22 @@ const Home: FC = () => {
   return (
     <div id="top" className="min-h-svh overflow-x-clip bg-paper text-ink">
       <main>
-        <HeroSheet
-          columns={HERO_COLUMNS}
-          panel={
-            <HeroPanel
-              name="Orbit"
-              title="A project manager that lives in WhatsApp."
-              sub="Send a voice note after a client call. Orbit turns it into tasks with deadlines and texts you before anything slips. No new app to open."
-              action={<Button href={whatsappHref}>Start free on WhatsApp</Button>}
-              note="14 days free, no card"
-              links={[
-                { label: "For teams", href: PATHS.teams },
-                { label: "How it works", href: "#how" },
-                { label: "Pricing", href: "#pricing" },
-                { label: "FAQ", href: "#faq" },
-              ]}
-            />
-          }
+        <Hero
+          brand="Orbit"
+          homeHref={PATHS.home}
+          links={[
+            { label: "For teams", href: PATHS.teams },
+            { label: "How it works", href: "#how" },
+            { label: "Pricing", href: "#pricing" },
+            { label: "FAQ", href: "#faq" },
+          ]}
+          navAction={{ label: "Start free", href: whatsappHref }}
+          title={["Your project", "manager, on WhatsApp."]}
+          sub="Send a voice note after a client call. Orbit turns it into tasks with deadlines and texts you before anything slips. No new app to open."
+          actions={<Button href={whatsappHref}>Start free on WhatsApp</Button>}
+          note="14 days free, no card"
+          chat={{ title: "Orbit", sub: "your project manager", beats: HERO_BEATS }}
+          cards={HERO_CARDS}
         />
 
         <TwoWays whatsappHref={whatsappHref} />

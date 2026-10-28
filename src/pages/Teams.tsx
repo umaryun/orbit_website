@@ -7,8 +7,6 @@ import {
   Button,
   ChatHead,
   FaqBands,
-  HeroPanel,
-  HeroSheet,
   LeadColumns,
   PlanTable,
   SiteFooter,
@@ -18,190 +16,61 @@ import {
   reveal,
   useReveal,
 } from "../components/site";
-import type { Frame, Msg } from "../components/site";
+import { Hero, VoiceNote } from "../components/hero";
+import type { Beat, HeroCard } from "../components/hero";
 
 /* ------------------------------------------------------------------ */
-/*  Hero: the group chat and what Orbit does with it                   */
+/*  Hero: one morning in the group, played out                         */
 /* ------------------------------------------------------------------ */
 
-const b = (m: Msg, group = true) => <Bubble m={m} group={group} />;
-const stack = (...nodes: ReactNode[]) => <div className="flex flex-col gap-1.5">{nodes}</div>;
+const HERO_BEATS: Beat[] = [
+  { kind: "msg", m: { from: "Kemi", text: "Orbit, assign the vendor payments report to Ada, due Friday 12:00", time: "10:12" } },
+  {
+    kind: "msg",
+    m: { from: "orbit", text: "Done. Vendor payments report is with Ada in Finance ops, due Fri 30 Oct at 12:00. I've let her know.", time: "10:12" },
+    typing: 1500,
+  },
+  { kind: "msg", m: { from: "Tobi", text: <VoiceNote length="0:42" />, time: "11:03" }, wait: 1500 },
+  { kind: "msg", m: { from: "orbit", text: "Moved Payments dashboard filters to In review, Tobi. Settlement alerts is yours, due Mon 2 Nov.", time: "11:03" }, typing: 1400 },
+  { kind: "msg", m: { from: "Chidi", text: "thanks Orbit", time: "11:05" }, wait: 1400 },
+  { kind: "note", text: "No reply. Nothing needed one.", wait: 1100 },
+  { kind: "msg", m: { from: "Kemi", text: "Orbit, status?", time: "11:20" }, wait: 1500 },
+  {
+    kind: "msg",
+    m: {
+      from: "orbit",
+      text: "23 open, 2 overdue, 1 blocked. Month-end close checklist is 2 days late; I've followed up with Ada twice.",
+      time: "11:20",
+    },
+    typing: 1400,
+  },
+];
 
-const HERO_COLUMNS: Frame[][] = [
-  [
-    {
-      strip: "Ops team · group",
-      stripTone: 0,
-      body: stack(
-        b({ from: "Kemi", text: "Orbit, assign the vendor payments report to Ada, due Friday 12:00", time: "10:12" }),
-        b({ from: "orbit", text: "Done. Vendor payments report is with Ada in Finance ops, due Fri 30 Oct at 12:00. I've let her know.", time: "10:12" }),
-      ),
-    },
-    {
-      strip: "Voice note, transcribed",
-      stripTone: 2,
-      body: stack(
-        b({ from: "Tobi", meta: "Voice note · 0:42", text: "“Filters are done, starting settlement alerts tomorrow…”", time: "11:03" }),
-        b({ from: "orbit", text: "Moved Payments dashboard filters to In review, Tobi.", time: "11:03" }),
-      ),
-    },
-    {
-      strip: "Group · projects set",
-      stripTone: 1,
-      body: b({ from: "Kemi", text: "Orbit, projects: Tobi, Payments dashboard; Ada and Ben, Bank onboarding", time: "09:20" }),
-    },
-  ],
-  [
-    {
-      strip: "Private · to Ada",
-      stripTone: 1,
-      body: b(
-        {
-          from: "orbit",
-          text: (
-            <>
-              <b>New task assigned in Ops team</b>
-              {"\n"}• Task: Vendor payments report{"\n"}• Project: Finance ops{"\n"}• Priority: High{"\n"}• Due: Fri 30 Oct at 12:00
-              {"\n\n"}
-              <i>Reply here in our private chat to track or update status.</i>
-            </>
-          ),
-          time: "10:12",
-        },
-        false,
-      ),
-    },
-    {
-      strip: "Board · In review",
-      stripTone: 3,
-      body: (
-        <div className="rounded-md bg-white p-3 text-[0.8125rem] text-ink">
-          <p className="font-semibold">Payments dashboard filters</p>
-          <p className="mt-1 text-ink-soft">Tobi · Payments dashboard</p>
-          <p className="mt-2 text-ink-soft tnum">Due today at 16:00</p>
-        </div>
-      ),
-    },
-    {
-      strip: "Private · reply",
-      stripTone: 0,
-      body: stack(b({ from: "me", text: "need until Monday, waiting on the bank statement", time: "14:31" }, false)),
-    },
-  ],
-  [
-    {
-      strip: "Group · daily summary",
-      stripTone: 0,
-      body: b({
-        from: "orbit",
-        text: (
-          <>
-            <b>Daily check-in · Ops team</b>
-            {"\n"}• Ada: closing Q3 recon, then the vendor report{"\n"}• Ben: KYC upload blocked on bank API keys{"\n"}• Tobi: settlement alerts{"\n"}Still to reply: Chidi
-          </>
-        ),
-        time: "09:40",
-      }),
-    },
-  ],
-  [
-    {
-      strip: "Private · follow-up",
-      stripTone: 1,
-      body: b(
-        {
-          from: "orbit",
-          text: (
-            <>
-              <b>Month-end close checklist</b> (Finance ops) was due yesterday at 17:00. Is it done, do you need more time, or is something blocking it?
-            </>
-          ),
-          time: "09:05",
-        },
-        false,
-      ),
-    },
-    {
-      strip: "Console · this week",
-      stripTone: 3,
-      body: (
-        <dl className="grid grid-cols-2 gap-1.5 text-ink">
-          {[
-            ["Open", "23"],
-            ["Done", "14"],
-            ["Overdue", "2"],
-            ["Blocked", "1"],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-md bg-white p-2.5">
-              <dt className="text-[0.8125rem] text-ink-soft">{k}</dt>
-              <dd className="font-display text-[1.375rem] font-semibold leading-none tnum">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    },
-  ],
-  [
-    {
-      strip: "Private · 09:00 check-in",
-      stripTone: 1,
-      body: b(
-        {
-          from: "orbit",
-          text: "Hello Ben! Time for the daily check-in for Ops team:\n\n1. What did you get done yesterday?\n2. What are you focusing on today?\n3. Is anything holding you up?",
-          time: "09:00",
-        },
-        false,
-      ),
-    },
-    {
-      strip: "Private · to the managers",
-      stripTone: 2,
-      body: b(
-        {
-          from: "orbit",
-          text: (
-            <>
-              <b>KYC document upload</b> (Bank onboarding) is blocked. Ben says: waiting on the bank's API keys.
-            </>
-          ),
-          time: "09:22",
-        },
-        false,
-      ),
-    },
-    {
-      strip: "Group · undo",
-      stripTone: 0,
-      body: stack(
-        b({ from: "Chidi", text: "Orbit, undo", time: "15:02" }),
-        b({ from: "orbit", text: "Undone: Refund policy page is back with Chidi, due Tue 03 Nov.", time: "15:02" }),
-      ),
-    },
-  ],
-  [
-    {
-      strip: "Group · no reply needed",
-      stripTone: 3,
-      body: stack(
-        b({ from: "Chidi", text: "thanks Orbit", time: "12:15" }),
-        b({ from: "Ada", text: "I'll ask Orbit about it later", time: "12:16" }),
-      ),
-    },
-    {
-      strip: "Group · shared documents",
-      stripTone: 0,
-      body: stack(
-        b({ from: "Ben", text: "Orbit, what does the vendor contract say about late fees?", time: "16:40" }),
-        b({ from: "orbit", text: "Section 7 of Vendor agreement.pdf: 2% a month after 30 days, capped at 10%.", time: "16:40" }),
-      ),
-    },
-    {
-      strip: "Private · to Tobi",
-      stripTone: 1,
-      body: b({ from: "orbit", text: "Heads-up: Settlement alerts (Payments dashboard) is due tomorrow at 12:00. Reply here if you need more time or something is blocking it.", time: "12:00" }, false),
-    },
-  ],
+const HERO_CARDS: HeroCard[] = [
+  {
+    after: 1,
+    node: (
+      <div>
+        <p className="text-[0.8125rem] text-ink-soft">Private chat · to Ada</p>
+        <p className="mt-1 text-step-sm font-semibold">New task assigned in Ops team</p>
+        <p className="mt-1 text-[0.8125rem] leading-snug text-ink-soft">Vendor payments report · due Fri 30 Oct, 12:00</p>
+      </div>
+    ),
+  },
+  {
+    after: 3,
+    node: (
+      <div>
+        <p className="text-[0.8125rem] text-ink-soft">Board</p>
+        <p className="mt-1 text-step-sm font-semibold">Payments dashboard filters</p>
+        <p className="mt-2 flex items-center gap-2 text-[0.8125rem]">
+          <span className="rounded-tile bg-signal px-2 py-0.5 text-paper line-through decoration-paper/70">In progress</span>
+          <span aria-hidden>→</span>
+          <span className="rounded-tile bg-blossom px-2 py-0.5 text-ink">In review</span>
+        </p>
+      </div>
+    ),
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -889,23 +758,22 @@ const Teams: FC = () => {
   return (
     <div id="top" className="min-h-svh overflow-x-clip bg-paper text-ink">
       <main>
-        <HeroSheet
-          columns={HERO_COLUMNS}
-          panel={
-            <HeroPanel
-              name="Orbit Teams"
-              title="A project manager inside your team's WhatsApp group."
-              sub="Orbit hands out the work, follows up on deadlines in private, runs daily check-ins and keeps a live board on the web. Nobody installs anything."
-              action={<Button href={BOOK_CALL_URL}>Book a call</Button>}
-              note="Pricing agreed on the call"
-              links={[
-                { label: "For freelancers", href: PATHS.home },
-                { label: "How it works", href: "#how" },
-                { label: "Pricing", href: "#pricing" },
-                { label: "FAQ", href: "#faq" },
-              ]}
-            />
-          }
+        <Hero
+          brand="Orbit Teams"
+          homeHref={PATHS.teams}
+          links={[
+            { label: "For freelancers", href: PATHS.home },
+            { label: "How it works", href: "#how" },
+            { label: "Pricing", href: "#pricing" },
+            { label: "FAQ", href: "#faq" },
+          ]}
+          navAction={{ label: "Book a call", href: BOOK_CALL_URL }}
+          title={["The project manager", "in your group chat."]}
+          sub="Orbit joins your team's WhatsApp group. It hands out the work, follows up on deadlines in private, runs daily check-ins and keeps a live board on the web. Nobody installs anything."
+          actions={<Button href={BOOK_CALL_URL}>Book a call</Button>}
+          note="Pricing agreed on the call"
+          chat={{ title: "Ops team", sub: "Kemi, Ada, Ben, Tobi, Chidi, Orbit", group: true, beats: HERO_BEATS }}
+          cards={HERO_CARDS}
         />
 
         <LeadColumns
