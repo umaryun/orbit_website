@@ -493,7 +493,7 @@ const Home: FC = () => {
           heading="Let Orbit do the remembering"
           text="Stop keeping deadlines in your head. Say hi to Orbit on WhatsApp and tell it what you're working on this week. 14 days free, no card."
           action={<Button href={whatsappHref} tone="ink">Start free on WhatsApp</Button>}
-          left={<img src="/hero-bg.jpg" alt="Silhouette of a man in profile against a pale wall" width={1026} height={935} loading="lazy" className="h-full w-full object-cover" />}
+          left={<img src="/hero-bg.jpg" alt="Orbit's mark: a silhouette in profile, circled by a glowing orbit" width={1200} height={1200} loading="lazy" className="h-full w-full object-cover" />}
           right={<div className="h-full bg-forest" />}
         />
       </main>

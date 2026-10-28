@@ -53,13 +53,9 @@ export const reveal = (beat = 0): { "data-reveal": true; style: CSSProperties } 
 /*  Atoms                                                              */
 /* ------------------------------------------------------------------ */
 
-/** Orbit's mark: a planet with a moon on its orbit, in flat brand colours. */
+/** Orbit's logo: the silhouette circled by its orbit. Decorative wherever the name sits beside it. */
 export const Mark: FC<{ className?: string }> = ({ className = "h-7 w-7" }) => (
-  <svg viewBox="0 0 32 32" className={className} aria-hidden>
-    <circle cx="16" cy="16" r="9" fill="#2e6b40" />
-    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.45" />
-    <circle cx="27.5" cy="8" r="3.5" fill="#ed5a14" />
-  </svg>
+  <img src="/logo.jpg" alt="" width={256} height={256} className={`shrink-0 rounded-full bg-white object-cover ${className}`} />
 );
 
 type Tone = "orange" | "ink" | "paper";
@@ -145,9 +141,7 @@ export const Bubble: FC<{ m: Msg; group?: boolean; className?: string }> = ({ m,
 
 export const ChatHead: FC<{ title: string; sub: string }> = ({ title, sub }) => (
   <div className="flex items-center gap-3 bg-wa-head px-4 py-3 text-paper">
-    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-paper text-ink">
-      <Mark className="h-6 w-6" />
-    </span>
+    <Mark className="h-9 w-9" />
     <div className="min-w-0">
       <p className="truncate font-display text-[0.9375rem] font-semibold leading-tight">{title}</p>
       <p className="truncate text-[0.8125rem] text-paper/75">{sub}</p>

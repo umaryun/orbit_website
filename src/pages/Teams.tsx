@@ -810,7 +810,7 @@ const Teams: FC = () => {
               <Bubble group m={{ from: "orbit", text: "Hello team, I'm Orbit, your project manager here in Ops team. I keep track of who's doing what and by when.", time: "09:00" }} />
             </div>
           }
-          right={<img src="/hero-bg.jpg" alt="Silhouette of a man in profile against a pale wall" width={1026} height={935} loading="lazy" className="h-full w-full object-cover" />}
+          right={<img src="/hero-bg.jpg" alt="Orbit's mark: a silhouette in profile, circled by a glowing orbit" width={1200} height={1200} loading="lazy" className="h-full w-full object-cover" />}
         />
       </main>
       <SiteFooter columns={FOOTER_COLUMNS} />

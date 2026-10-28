@@ -170,7 +170,7 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
     <>
       <header className="hero-fade flex items-center justify-between gap-6 px-5 py-5 md:px-8">
         <a href={homeHref} className="flex items-center gap-2.5 font-display text-[1.375rem] font-bold tracking-tight">
-          <Mark className="h-7 w-7 text-ink" />
+          <Mark className="h-9 w-9" />
           {brand}
         </a>
         <nav aria-label="Primary" className="hidden items-center gap-8 text-step-sm md:flex">
