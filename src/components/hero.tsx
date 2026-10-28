@@ -123,7 +123,7 @@ export const VoiceNote: FC<{ length: string; live?: boolean }> = ({ length, live
  * and a moon travelling slowly around them.
  */
 const Orbits: FC = () => (
-  <svg viewBox="-300 -300 600 600" className="pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2" aria-hidden>
+  <svg viewBox="-300 -300 600 600" className="pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 2xl:h-[720px] 2xl:w-[720px]" aria-hidden>
     <circle r="262" className="orbit-path" fill="none" stroke="rgba(242,240,232,0.16)" strokeWidth="2" pathLength={1} />
     <circle r="214" className="orbit-path orbit-path-2" fill="none" stroke="rgba(242,240,232,0.1)" strokeWidth="2" pathLength={1} />
     <g className="orbit-spin">
@@ -151,9 +151,34 @@ export interface HeroProps {
   note?: ReactNode;
   chat: { title: string; sub: string; group?: boolean; beats: Beat[] };
   cards?: HeroCard[];
+  /** Real things people send Orbit, drifting along the bottom of the hero on wide screens. */
+  ticker?: { label: string; items: string[] };
 }
 
-export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, sub, actions, note, chat, cards = [] }) => {
+/** A slow, endless row of sent messages. Pauses on hover; still under reduced motion. */
+const Ticker: FC<{ label: string; items: string[] }> = ({ label, items }) => (
+  <div className="hero-rise hidden items-center gap-8 pb-8 lg:flex" style={{ animationDelay: "900ms" }}>
+    <p className="shrink-0 pl-5 text-step-sm text-ink-soft md:pl-8">{label}</p>
+    <div className="marquee min-w-0 flex-1 overflow-hidden">
+      <div className="marquee-track flex w-max">
+        {[0, 1].map((copy) => (
+          <ul key={copy} aria-hidden={copy === 1} className="flex shrink-0 gap-3 pr-3">
+            {items.map((t) => (
+              <li
+                key={t}
+                className="rounded-lg rounded-tr-none bg-wa-out px-4 py-2.5 text-step-sm whitespace-nowrap text-ink transition-colors duration-300 hover:bg-forest hover:text-paper"
+              >
+                {t}
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, sub, actions, note, chat, cards = [], ticker }) => {
   const { shown, typing, fading, visible } = useConversation(chat.beats);
   const stage = useRef<HTMLDivElement>(null);
 
@@ -190,9 +215,10 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
         </a>
       </header>
 
-      <section aria-labelledby="hero-title" className="grid items-center gap-12 px-5 pt-8 pb-16 md:px-8 lg:min-h-[calc(100svh-84px)] lg:grid-cols-12 lg:gap-8 lg:pt-4 lg:pb-12">
+      <section aria-labelledby="hero-title" className="flex flex-col lg:min-h-[calc(100svh-84px)]">
+      <div className="grid flex-1 items-center gap-12 px-5 pt-8 pb-16 md:px-8 lg:grid-cols-12 lg:gap-8 lg:pt-4 lg:pb-12 2xl:gap-16">
         <div className="lg:col-span-7">
-          <h1 id="hero-title" className="font-display text-[clamp(2.5rem,4.6vw,4.75rem)] leading-[0.98] font-bold tracking-[-0.04em]">
+          <h1 id="hero-title" className="font-display text-[clamp(2.5rem,4.8vw,7.25rem)] leading-[0.98] font-bold tracking-[-0.04em]">
             {title.map((line, i) => (
               <span key={line} className="block overflow-hidden pb-[0.08em]">
                 <span className="line-rise block" style={{ animationDelay: `${120 + i * 110}ms` }}>
@@ -201,7 +227,7 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
               </span>
             ))}
           </h1>
-          <p className="hero-rise mt-7 max-w-[44ch] text-[1.1875rem] leading-relaxed text-ink" style={{ animationDelay: "480ms" }}>
+          <p className="hero-rise mt-7 max-w-[44ch] text-[clamp(1.1875rem,1.1vw,1.5rem)] leading-relaxed text-ink 2xl:mt-9" style={{ animationDelay: "480ms" }}>
             {sub}
           </p>
           <div className="hero-rise mt-9 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ animationDelay: "600ms" }}>
@@ -211,14 +237,14 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
         </div>
 
         <div ref={stage} className="lg:col-span-5">
-          <div className="stage-open relative h-[560px] overflow-hidden rounded-tile bg-forest md:h-[620px]">
+          <div className="stage-open relative h-[560px] overflow-hidden rounded-tile bg-forest md:h-[620px] 2xl:h-[clamp(620px,66svh,800px)]">
             <Orbits />
 
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-5">
-              <div data-ui className="w-full max-w-[370px] overflow-hidden rounded-tile bg-wa-bg">
+              <div data-ui className="w-full max-w-[370px] overflow-hidden rounded-tile bg-wa-bg 2xl:max-w-[430px]">
                 <ChatHead title={chat.title} sub={chat.sub} />
                 <div
-                  className={`flex h-[340px] flex-col justify-end gap-2 overflow-hidden p-3 transition-opacity duration-500 md:h-[390px] ${fading ? "opacity-0" : "opacity-100"}`}
+                  className={`flex h-[340px] flex-col justify-end gap-2 overflow-hidden p-3 transition-opacity duration-500 md:h-[390px] 2xl:h-[clamp(390px,40svh,500px)] ${fading ? "opacity-0" : "opacity-100"}`}
                 >
                   {chat.beats.slice(0, shown).map((beat, i) => (
                     <div key={i} className="bubble-in shrink-0">
@@ -238,7 +264,7 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
               </div>
 
               {/* What the conversation turned into: one card at a time, docked under the chat. */}
-              <div className="relative h-[92px] w-full max-w-[370px]">
+              <div className="relative h-[92px] w-full max-w-[370px] 2xl:max-w-[430px]">
                 {cards.map((c, i) => {
                   const next = cards[i + 1];
                   const on = shown > c.after && !(next && shown > next.after) && !fading;
@@ -260,6 +286,8 @@ export const Hero: FC<HeroProps> = ({ brand, homeHref, links, navAction, title, 
             </div>
           </div>
         </div>
+      </div>
+      {ticker && <Ticker label={ticker.label} items={ticker.items} />}
       </section>
     </>
   );

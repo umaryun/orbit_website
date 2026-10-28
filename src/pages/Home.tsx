@@ -451,6 +451,22 @@ const Home: FC = () => {
           note="14 days free, no card"
           chat={{ title: "Orbit", sub: "your project manager", beats: HERO_BEATS }}
           cards={HERO_CARDS}
+          ticker={{
+            label: "Things people send Orbit",
+            items: [
+              "remind me to invoice Tunde on Monday at 10",
+              "what's due this week?",
+              "let's focus on Acme",
+              "break the checkout into tasks",
+              "I'm blocked on the Stripe keys",
+              "draft a client update for Acme",
+              "what's my top priority?",
+              "move the dashboard fixes to Friday",
+              "what do you know about me?",
+              "done with the webhooks",
+              "open console",
+            ],
+          }}
         />
 
         <TwoWays whatsappHref={whatsappHref} />

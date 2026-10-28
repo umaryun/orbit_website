@@ -191,6 +191,22 @@
   animation: wave 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* The ticker of sent messages along the bottom of the hero. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 70s linear infinite;
+}
+.marquee {
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
 /* Typing dots inside chat fragments. */
 @keyframes typing {
   0%,
@@ -238,6 +254,7 @@
   .orbit-spin,
   .orbit-spin-rev,
   .wave-bar,
+  .marquee-track,
   .typing-dot,
   .bubble-in {
     animation: none !important;

@@ -774,6 +774,22 @@ const Teams: FC = () => {
           note="Pricing agreed on the call"
           chat={{ title: "Ops team", sub: "Kemi, Ada, Ben, Tobi, Chidi, Orbit", group: true, beats: HERO_BEATS }}
           cards={HERO_CARDS}
+          ticker={{
+            label: "Things teams say to Orbit",
+            items: [
+              "Orbit, assign the vendor report to Ada, due Friday",
+              "Orbit, status",
+              "Orbit, my tasks",
+              "Orbit, undo",
+              "Orbit, make Ben a manager",
+              "Orbit, move check-ins to 10:00",
+              "Orbit, who moved the KYC deadline?",
+              "Orbit, what does the contract say about late fees?",
+              "Orbit, my project is Payments dashboard",
+              "nudge them again",
+              "Orbit, turn on daily check-ins",
+            ],
+          }}
         />
 
         <LeadColumns
